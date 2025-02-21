@@ -26,3 +26,36 @@ e: 10101010101010101010101010101010
 f: 111
 g: 100000000
 ```
+
+The choice of endianess seems to determine the bit order _within the bytes_. 
+This is not the convential meaning for enidianess, which is strictly used for 
+byte order and addressing; i.e the byte order for multibyte types. However,
+if the same value is used, serialization/deserialization works for both of
+them. Will need to experiment to see how this works if trying to decode
+a bit packed stream without using ETLCPP.
+
+You can see the effect in the dump of the write buffer,when 
+_etl::endian::big_ was changed to _etl::endian::little_:
+
+```
+Write values:
+a: 0111
+b: 10
+c: 1
+d: 0000010000000
+e: 10101010101010101010101010101010
+f: 111
+g: 100000000
+
+Storage bits: 64, dump of the write buffer:
+11100110 00000010 00000101 01010101 01010101 01010101 01011110 00000001 
+
+Read values:
+a: 0111
+b: 10
+c: 1
+d: 0000010000000
+e: 10101010101010101010101010101010
+f: 111
+g: 100000000
+```
