@@ -15,7 +15,7 @@ struct BitfieldStruct
     uint16_t d : 13;
     int32_t e : 32;
     uint8_t f : 3;
-    uint16_t g : 9;
+    uint16_t g : 11;
 };
 
 void bin_print(uint32_t n, uint8_t w=8)
@@ -39,7 +39,7 @@ void setup()
     test_write.d = 0b0000010000000;
     test_write.e = (int32_t)(-105.054931555*1.0e6);
     test_write.f = 0b111;
-    test_write.g = 0b100000000;
+    test_write.g = 0b10000000001;
 
     SerialUSB.println("\nWrite values:");
     SerialUSB.print("a: "); bin_print(test_write.a, 4); SerialUSB.println();
@@ -48,25 +48,25 @@ void setup()
     SerialUSB.print("d: "); bin_print(test_write.d, 13); SerialUSB.println();
     SerialUSB.print("e: "); bin_print(test_write.e, 32); SerialUSB.print(" (" + String(test_write.e/1.0e6, 9) + ")"); SerialUSB.println();
     SerialUSB.print("f: "); bin_print(test_write.f, 3); SerialUSB.println();
-    SerialUSB.print("g: "); bin_print(test_write.g, 9); SerialUSB.println();
+    SerialUSB.print("g: "); bin_print(test_write.g, 11); SerialUSB.println();
     SerialUSB.println();
 
     // Create the write buffer
-    etl::array<char, 8U> write_buffer;
+    etl::array<char, 9U> write_buffer;
     etl::span<char> write_span(write_buffer.data(), write_buffer.size());
 
-    etl::bit_stream_writer bit_stream(write_span, etl::endian::big);
+    etl::bit_stream_writer bit_stream(write_span, etl::endian::little);
     bit_stream.write_unchecked(test_write.a, 4);
     bit_stream.write_unchecked(test_write.b, 2);
     bit_stream.write_unchecked(test_write.c, 1);
     bit_stream.write_unchecked(test_write.d, 13);
     bit_stream.write_unchecked(test_write.e, 32);
     bit_stream.write_unchecked(test_write.f, 3);
-    bit_stream.write_unchecked(test_write.g, 9);
+    bit_stream.write_unchecked(test_write.g, 11);
 
     SerialUSB.println("Storage bits: " + String(bit_stream.size_bits()) + ", dump of the write buffer:");
 
-    for (size_t i = 0; i < 8; ++i)
+    for (size_t i = 0; i < write_buffer.size(); ++i)
     {
         bin_print(write_buffer[i]);
         SerialUSB.print(" ");
@@ -75,11 +75,11 @@ void setup()
     SerialUSB.println();
 
     // Copy the write buffer to the read buffer.
-    etl::array<char, 8U> read_buffer; // Assume the buffer gets filled with bit stream data.
+    etl::array<char, 9U> read_buffer; // Assume the buffer gets filled with bit stream data.
     read_buffer = write_buffer;
 
     etl::span<char> read_span(read_buffer.data(), read_buffer.size());
-    etl::bit_stream_reader bit_stream_reader(write_span, etl::endian::big);
+    etl::bit_stream_reader bit_stream_reader(write_span, etl::endian::little);
     BitfieldStruct test_read;
     test_read.a = bit_stream_reader.read_unchecked<uint8_t>(4);
     test_read.b = bit_stream_reader.read_unchecked<uint8_t>(2);
@@ -87,7 +87,7 @@ void setup()
     test_read.d = bit_stream_reader.read_unchecked<uint16_t>(13);
     test_read.e = bit_stream_reader.read_unchecked<int32_t>(32);
     test_read.f = bit_stream_reader.read_unchecked<uint8_t>(3);
-    test_read.g = bit_stream_reader.read_unchecked<uint16_t>(9);
+    test_read.g = bit_stream_reader.read_unchecked<uint16_t>(11);
 
     SerialUSB.println("Read values:");
     SerialUSB.print("a: "); bin_print(test_read.a, 4); SerialUSB.println();
@@ -96,7 +96,7 @@ void setup()
     SerialUSB.print("d: "); bin_print(test_read.d, 13); SerialUSB.println();
     SerialUSB.print("e: "); bin_print(test_read.e, 32); SerialUSB.print(" (" + String(test_read.e/1.0e6, 9) + ")"); SerialUSB.println();
     SerialUSB.print("f: "); bin_print(test_read.f, 3); SerialUSB.println();
-    SerialUSB.print("g: "); bin_print(test_read.g, 9); SerialUSB.println();
+    SerialUSB.print("g: "); bin_print(test_read.g, 11); SerialUSB.println();
 
 }
 
