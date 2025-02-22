@@ -13,7 +13,7 @@ struct BitfieldStruct
     uint8_t b : 2;
     uint8_t c : 1;
     uint16_t d : 13;
-    uint32_t e : 32;
+    int32_t e : 32;
     uint8_t f : 3;
     uint16_t g : 9;
 };
@@ -37,7 +37,7 @@ void setup()
     test_write.b = 0b10;
     test_write.c = 0b1;
     test_write.d = 0b0000010000000;
-    test_write.e = 0b10101010101010101010101010101010;
+    test_write.e = (int32_t)(-105.054931555*1.0e6);
     test_write.f = 0b111;
     test_write.g = 0b100000000;
 
@@ -46,7 +46,7 @@ void setup()
     SerialUSB.print("b: "); bin_print(test_write.b, 2); SerialUSB.println();
     SerialUSB.print("c: "); bin_print(test_write.c, 1); SerialUSB.println();
     SerialUSB.print("d: "); bin_print(test_write.d, 13); SerialUSB.println();
-    SerialUSB.print("e: "); bin_print(test_write.e, 32); SerialUSB.println();
+    SerialUSB.print("e: "); bin_print(test_write.e, 32); SerialUSB.print(" (" + String(test_write.e/1.0e6, 9) + ")"); SerialUSB.println();
     SerialUSB.print("f: "); bin_print(test_write.f, 3); SerialUSB.println();
     SerialUSB.print("g: "); bin_print(test_write.g, 9); SerialUSB.println();
     SerialUSB.println();
@@ -85,7 +85,7 @@ void setup()
     test_read.b = bit_stream_reader.read_unchecked<uint8_t>(2);
     test_read.c = bit_stream_reader.read_unchecked<uint8_t>(1);
     test_read.d = bit_stream_reader.read_unchecked<uint16_t>(13);
-    test_read.e = bit_stream_reader.read_unchecked<uint32_t>(32);
+    test_read.e = bit_stream_reader.read_unchecked<int32_t>(32);
     test_read.f = bit_stream_reader.read_unchecked<uint8_t>(3);
     test_read.g = bit_stream_reader.read_unchecked<uint16_t>(9);
 
@@ -94,7 +94,7 @@ void setup()
     SerialUSB.print("b: "); bin_print(test_read.b, 2); SerialUSB.println();
     SerialUSB.print("c: "); bin_print(test_read.c, 1); SerialUSB.println();
     SerialUSB.print("d: "); bin_print(test_read.d, 13); SerialUSB.println();
-    SerialUSB.print("e: "); bin_print(test_read.e, 32); SerialUSB.println();
+    SerialUSB.print("e: "); bin_print(test_read.e, 32); SerialUSB.print(" (" + String(test_read.e/1.0e6, 9) + ")"); SerialUSB.println();
     SerialUSB.print("f: "); bin_print(test_read.f, 3); SerialUSB.println();
     SerialUSB.print("g: "); bin_print(test_read.g, 9); SerialUSB.println();
 
